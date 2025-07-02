@@ -1,2 +1,2 @@
 # Inscricao Escolar
-meu primeiro repositorio
+meu primeiro repositório e meu primeiro projeto 
