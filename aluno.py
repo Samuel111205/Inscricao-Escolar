@@ -39,7 +39,7 @@ while True:
                 break
             elif pagamento=="Nao":
                 print("Para continuares o processo de maricula tens de fazer o pagamento do rupe")
-                print("dirija-se a secretaria do ceu curso  receba um rupe")
+                print("dirija-se a secretaria do ceu curso  e receba um rupe")
                 break
             else:
                 print("Resposta errada por favor digite apenas Sim ou Nao")
