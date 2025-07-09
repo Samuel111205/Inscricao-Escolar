@@ -36,17 +36,35 @@ class Matricula(Pessoa):
 def menu():
     print("===SISTEMA DE INSCRIÇÃO===")
     print("1.Gerenciamentos de cadastro")
-   
 
 def menu_cadastro():
     print("1.Cadastrar alunos")
     print("2.Listar alunos cadastrados")
-    print("3.Lisatr alunos não cadastrados")
-    print("4.Fazer Matricula")
-    print("5.Calcular total de inscrito")
-    print("6.Sair")
+    print("3.fazer matricula")
+    print("4.Sair")
 
 
-cadastrados=[]#lista que armazena os alunos cadastrados
-nao_cadastradas=[]#lista que armazena os alunos não cadastradas 
-total_inscritos=[]#lista que armazena o numero total de pessoas incritas
+def sorteio():
+    from random import randint
+    try:
+        
+        cont=1
+        while cont<=13:
+            n=randint(1,9)
+            print(f"{n}",end=" ")
+            cont+=1
+    except Exception as erro:
+        print(f"Infelizmente tivemos um erro. E o erro foi {erro}")
+
+
+def menu_alunos():
+    print("1.Listar alunos do curso de contablidade")
+    print("2.Listar alunos do curso de informatica")
+    print("3.Listar total de alunos cadastrados")
+
+
+cadastrados=[] 
+total_inscritos=[]
+tot_aluno_da_contablidade=[]
+tot_aluno_da_informatica=[]
+
