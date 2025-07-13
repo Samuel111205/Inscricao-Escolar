@@ -5,6 +5,7 @@ class Pessoa:
         self.__nascimento=nascimento
         self.idade=idade
         self.media=media
+
     def mostrar_dados(self):
         print("Mostrar os dados do Aluno! ")
 
@@ -14,6 +15,7 @@ class Aluno(Pessoa):
     def __init__(self,nome,nascimento,idade,media,curso):
         super().__init__(nome,nascimento,idade, media)
         self.curso=curso
+
     def mostrar_dados(self):
         print(f"Nome: {self.nome}")
         print(f"Idade: {self.idade}")
@@ -23,19 +25,25 @@ class Aluno(Pessoa):
 
 #sublcasse matricula que herda da classe mãe pessoa
 class Matricula(Pessoa):
-    def __init__(self, nome, nascimento, idade,classe,media):
-        super().__init__(nome, nascimento, idade,media,)
+    def __init__(self, nome, nascimento, idade,classe,curso):
+        # Aqui, "media" não faz sentido para a matricula, então substitui por curso
+        super().__init__(nome, nascimento, idade,None)
         self.classe=classe
+        self.curso=curso
+
     def mostrar_dados(self):
         print(f"Nome: {self.nome}")
         print(f"Idade: {self.idade}")
         print(f"Classe: {self.classe}ªClasse")
-        print(f"Curso: {self.media}")
-    
+        print(f"Curso: {self.curso}")
+
+
 #função que exibe o menu de opções
 def menu():
     print("===SISTEMA DE INSCRIÇÃO===")
     print("1.Gerenciamentos de cadastro")
+    print("2.Gerenciamento do aluno")
+
 
 def menu_cadastro():
     print("1.Cadastrar alunos")
@@ -47,12 +55,13 @@ def menu_cadastro():
 def sorteio():
     from random import randint
     try:
-        
-        cont=1
-        while cont<=13:
-            n=randint(1,9)
-            print(f"{n}",end=" ")
-            cont+=1
+        codigo=" " 
+        for _ in range(13):
+            n=randint(0,9)
+            #print(f"{n}",end=" ")
+            codigo+=str(n)
+        print()
+        return codigo
     except Exception as erro:
         print(f"Infelizmente tivemos um erro. E o erro foi {erro}")
 
@@ -61,10 +70,21 @@ def menu_alunos():
     print("1.Listar alunos do curso de contablidade")
     print("2.Listar alunos do curso de informatica")
     print("3.Listar total de alunos cadastrados")
+    print("4.Sair do menu")
+
+def menu_escolha_outtro_curso():
+    print("1.Informatica")
+    print("2.contabilidade")
 
 
-cadastrados=[] 
-total_inscritos=[]
-tot_aluno_da_contablidade=[]
-tot_aluno_da_informatica=[]
+def menu_gerenciameno_de_alnos():
+    print("1.Gerenciar alunos do curso de Informatica")
+    print("2.Gerenciar alnos do curso de conabilidade")
+    print("3.Mostrar a media final do aluno")
 
+
+cadastrados=list()
+total_inscritos=list()
+tot_aluno_da_contabilidade=list()
+tot_aluno_da_informatica=list()
+ficha=list()
