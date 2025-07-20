@@ -12,79 +12,83 @@ class Pessoa:
 
 #subclasse aluno que herda da classe mãe pessoa 
 class Aluno(Pessoa):
-    def __init__(self,nome,nascimento,idade,media,curso):
-        super().__init__(nome,nascimento,idade, media)
-        self.curso=curso
-
+    def __init__(self, nome, nascimento, idade, media, curso):
+        super().__init__(nome, nascimento, idade, media)
+        self.curso = curso
+        
     def mostrar_dados(self):
         print(f"Nome: {self.nome}")
         print(f"Idade: {self.idade}")
-        print(f"Media: {self.media}")
+        print(f"Media: {self.media:.2f}")
         print(f"Curso: {self.curso}")
-
 
 #sublcasse matricula que herda da classe mãe pessoa
 class Matricula(Pessoa):
-    def __init__(self, nome, nascimento, idade,classe,curso):
+    def __init__(self, nome, nascimento, idade,turma,curso,disciplinas=None):
         # Aqui, "media" não faz sentido para a matricula, então substitui por curso
         super().__init__(nome, nascimento, idade,None)
-        self.classe=classe
+        self.turma=turma
         self.curso=curso
+        self.disciplinas = disciplinas if disciplinas is not None else []
+        self.notas={}
+    
+    def adicionar_nota(self,disciplina,trimestre,notas):
+        if disciplina not in self.notas:
+            self.notas[disciplina]={}
+        self.notas[disciplina][trimestre]=notas
+    
+    def calcular_media_trimestral(self,disciplina,trimestre):
+        if disciplina in self.notas and trimestre in self.notas[disciplina]:
+            notas=self.notas[disciplina][trimestre]
+            return sum(notas)/len(notas)
+        return 0
+    
+    def calcular_media_final(self,disciplina):
+        if disciplina in self.notas:
+            todas_medias=[]
+            for trimestre in self.notas[disciplina]:
+                media=self.calcular_media_trimestral(disciplina,trimestre)
+                todas_medias.append(media)
+            if todas_medias:
+                return sum(todas_medias)/len(todas_medias)
+            return 0
 
     def mostrar_dados(self):
         print(f"Nome: {self.nome}")
         print(f"Idade: {self.idade}")
-        print(f"Classe: {self.classe}ªClasse")
+        print(f"Classe: {self.turma}ªClasse")
         print(f"Curso: {self.curso}")
+        print(f"Disciplinas: {', '.join(self.disciplinas) if self.disciplinas else 'Nenhuma'}")
+        if self.notas:
+            for disciplina in self.notas:
+                print(f"Notas da disciplina {disciplina}: ")
+                for trimestre, notas in self.notas[disciplina].items():
+                    media_tri=self.calcular_media_trimestral(disciplina,trimestre)
+                    print(f"{trimestre}: Notas={notas}, Media={media_tri:.2f}")
+                media_final=self.calcular_media_final(disciplina)
+                print(f"Media final de {disciplina}: {media_final:.2f}")
+                if media_final<10:
+                    print("Aluno REPROVADO")
+                else:
+                    print("Aluno APROVADO")
 
-
-#função que exibe o menu de opções
-def menu():
-    print("===SISTEMA DE INSCRIÇÃO===")
-    print("1.Gerenciamentos de cadastro")
-    print("2.Gerenciamento do aluno")
-
-
-def menu_cadastro():
-    print("1.Cadastrar alunos")
-    print("2.Listar alunos cadastrados")
-    print("3.fazer matricula")
-    print("4.Sair")
-
-
+# Função para gerar código de matrícula ()
 def sorteio():
     from random import randint
     try:
-        codigo=" " 
+        codigo = ""
         for _ in range(13):
-            n=randint(0,9)
-            #print(f"{n}",end=" ")
-            codigo+=str(n)
-        print()
+            codigo += str(randint(0, 9))
         return codigo
     except Exception as erro:
-        print(f"Infelizmente tivemos um erro. E o erro foi {erro}")
+        print(f"Erro ao gerar código: {erro}")
 
 
-def menu_alunos():
-    print("1.Listar alunos do curso de contablidade")
-    print("2.Listar alunos do curso de informatica")
-    print("3.Listar total de alunos cadastrados")
-    print("4.Sair do menu")
-
-def menu_escolha_outtro_curso():
-    print("1.Informatica")
-    print("2.contabilidade")
-
-
-def menu_gerenciameno_de_alnos():
-    print("1.Gerenciar alunos do curso de Informatica")
-    print("2.Gerenciar alnos do curso de conabilidade")
-    print("3.Mostrar a media final do aluno")
-
-
-cadastrados=list()
-total_inscritos=list()
-tot_aluno_da_contabilidade=list()
-tot_aluno_da_informatica=list()
-ficha=list()
+cadastrados=[]
+total_inscritos=[]
+tot_aluno_da_contabilidade=[]
+tot_aluno_da_informatica=[]
+ficha=[]
+matriculados=[]
+matricula_da_informatica=[]
+matricula_da_contabilidade=[]
