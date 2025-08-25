@@ -214,19 +214,35 @@ def cadastrar_disciplina_por_turma():
     print(f"Disciplina '{disciplina}' cadastrada para a turma {turma}ª Classe.")
 
 
-def salvar_notas_no_banco(nome_aluno, disciplina,trimestre,notas):
+"""def salvar_notas_no_banco(nome_aluno, disciplina,trimestre,notas):
     conn=banco.conectar()
     cursor=conn.cursor()
     #media = sum(notas) / len(notas)
-    """try:
+    try:
         cursor.execute("ALTER TABLE aluno_nota ADD COLUMN nota3 REAL")
     except s.OperationalError:
-        pass"""
+        pass
     
     cursor.execute(
         "INSERT  OR REPLACE INTO aluno_nota (aluno_nome, disciplina, trimestre, nota1, nota2, nota3) VALUES (?, ?, ?, ?, ?, ?)",
         (nome_aluno, disciplina, trimestre, notas[0], notas[1], notas[2])
     )
+    conn.commit()
+    conn.close()"""
+        
+def salvar_notas_no_banco(nome_aluno, disciplina, trimestre, notas):
+    conn = banco.conectar()
+    cursor = conn.cursor()
+    # Remove notas antigas desse aluno/disciplina/trimestre
+    cursor.execute("""
+        DELETE FROM notas WHERE nome_aluno=? AND disciplina=? AND trimestre=?
+    """, (nome_aluno, disciplina, trimestre))
+    # Insere as três notas novas
+    for i, valor in enumerate(notas, 1):
+        cursor.execute("""
+            INSERT INTO notas (nome_aluno, disciplina, trimestre, numero_nota, nota)
+            VALUES (?, ?, ?, ?, ?)
+        """, (nome_aluno, disciplina, trimestre, i, valor))
     conn.commit()
     conn.close()
 
@@ -245,7 +261,65 @@ def consultar_notas_do_aluno(nome_aluno):
             print(f"Disciplina: {disciplina} - {trimestre}: Notas = {n1}, {n2}, {n3}")
     else:
         print("Nenhuma nota cadastrada para este aluno.")
-        
+
+
+def mostrar_notas_do_banco():
+    conn = banco.conectar()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT nome_aluno, disciplina, trimestre, numero_nota, nota
+        FROM aluno_nota
+        ORDER BY nome_aluno, disciplina, trimestre, numero_nota
+    """)
+    resultados = cursor.fetchall()
+    conn.close()
+    
+    if resultados:
+        print("\n=== Tabela de Notas e Médias ===")
+        ultimo_aluno = ""
+        ultima_disciplina = ""
+        notas_disciplina = []
+        for nome_aluno, disciplina, trimestre, numero_nota, nota in resultados:
+            # Mudança de aluno
+            if nome_aluno != ultimo_aluno:
+                if notas_disciplina:
+                    # Média final da disciplina anterior
+                    media_final = sum(notas_disciplina) / len(notas_disciplina)
+                    print(f"      Média final: {media_final:.2f}")
+                    notas_disciplina = []
+                print(f"\nAluno: {nome_aluno}")
+                ultimo_aluno = nome_aluno
+                ultima_disciplina = ""
+            # Mudança de disciplina
+            if disciplina != ultima_disciplina:
+                if notas_disciplina:
+                    media_final = sum(notas_disciplina) / len(notas_disciplina)
+                    print(f"      Média final: {media_final:.2f}")
+                    notas_disciplina = []
+                print(f"  Disciplina: {disciplina}")
+                ultima_disciplina = disciplina
+            # Agrupa notas para cálculo de média
+            notas_trimestre = []
+            print(f"    {trimestre}: ", end="")
+            for nt in [1,2,3]:
+                nota_reg = next((n for na, di, tri, num, n in resultados if na==nome_aluno and di==disciplina and tri==trimestre and num==nt), None)
+                if nota_reg is not None:
+                    print(f"[N{nt}: {nota_reg}] ", end="")
+                    notas_trimestre.append(nota_reg)
+                    notas_disciplina.append(nota_reg)
+            if notas_trimestre:
+                media_tri = sum(notas_trimestre) / len(notas_trimestre)
+                print(f"| Média do trimestre: {media_tri:.2f}")
+            else:
+                print()
+        # Média final da última disciplina
+        if notas_disciplina:
+            media_final = sum(notas_disciplina) / len(notas_disciplina)
+            print(f"      Média final: {media_final:.2f}")
+        print("\n=== Fim da tabela ===")
+    else:
+        print("Nenhuma nota registrada no banco.")
+
     
 def listar_alunos_por_disciplina(disciplina_nome):
     conn = banco.conectar()
@@ -374,4 +448,6 @@ def editar_aluno(nome_aluno):
     salvar_alunos_no_banco()
     salvar_matriculas_no_banco()
     print(f"Aluno '{old_nome}' atualizado com sucesso.")
+
+
 

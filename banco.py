@@ -52,5 +52,15 @@ def criar_tabelas():
                    nota3 REAL   
         )
     """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS notas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome_aluno TEXT NOT NULL,
+            disciplina TEXT NOT NULL,
+            trimestre TEXT NOT NULL,
+            numero_nota INTEGER NOT NULL,
+            nota REAL NOT NULL
+        )
+    """)
     conn.commit()
     conn.close()
