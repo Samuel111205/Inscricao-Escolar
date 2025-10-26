@@ -449,5 +449,3 @@ def editar_aluno(nome_aluno):
     salvar_matriculas_no_banco()
     print(f"Aluno '{old_nome}' atualizado com sucesso.")
 
-
-
